@@ -5,7 +5,10 @@ Audial representation of GitHub commits, based on the new profile pages.
 
 Fairly bad code inside; built in approximately five and a half minutes.
 
-To run: Install node, `npm install`, `npm start`.
+To run:
+
+- Set `ghe_hostname` and `ghe_cookie` on lines 14 and 15 of app.js
+- Install node, `npm install`, `npm start`.
 
 To embed it on your site:
 

@@ -11,6 +11,9 @@ var express = require('express'),
 
 var app = express();
 
+var ghe_hostname = ""; // only the hostname, like github.foobar.com not http://github.foobar.com.
+var ghe_cookie = "_fi_sess="; // something like: _fi_sess=ASDVCASFRFVASFV...%3D--abcdef1234567890abcdef1234567890
+
 app.configure(function(){
   app.set('port', process.env.PORT || 4000);
   app.set('views', __dirname + '/views');
@@ -29,8 +32,20 @@ app.configure('development', function(){
 });
 
 app.get('/', function(req, res){
-  if(req.query.username){
-    https.get('https://github.com/users/' + req.query.username + '/contributions_calendar_data', function(response) {
+  var isCleanishUserRequest = false;
+  if (req.query.username) {
+    var re = /^[a-zA-Z0-9][-a-zA-Z0-9]*$/; // github requires username to start alphanumeric, then be alphanumerc + dash.
+    isCleanishUserRequest = (re.exec(req.query.username) !== null);
+  }
+  if(true === isCleanishUserRequest){
+    options = {
+        hostname: ghe_hostname,
+        path: "/users/" + req.query.username + "/contributions_calendar_data",
+        headers : {
+            Cookie: ghe_cookie
+        }
+    };
+    https.get(options, function(response) {
       response.on('data', function(d){
         try{
           JSON.parse(d);
